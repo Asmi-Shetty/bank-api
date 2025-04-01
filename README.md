@@ -10,19 +10,29 @@ A RESTful API service for accessing Indian bank and branch information, built wi
 - Efficient handling of large datasets (150,000+ branches)
 - Deployable to Heroku or other cloud platforms
 
-## Data Source
 
-Bank branch data sourced from [Indian Banks GitHub repository](https://github.com/Amanskywalker/indian_banks) containing:
+## Solution Architecture
 
-- 150,000+ bank branches
-- Complete IFSC code information
-- Bank names and branch details
+### Technical Stack
+- **Framework**: FastAPI (Python 3.8+)
+- **Database**: PostgreSQL (Production), SQLite (Development)
+- **ORM**: SQLAlchemy 1.4
+- **Data Handling**: Bulk loading with batch processing
+- **Deployment**: Heroku with Heroku Postgres
 
-## Setup Instructions
+## Problem-Solving Approach
 
-### Prerequisites
-
-- Python 3.8+
-- PostgreSQL (for production) or SQLite (for development)
-- pip
-
+### 1. Large Dataset Handling
+**Challenge**: Efficiently process 150,000+ branch records  
+**Solution**:
+```python
+# Batch processing implementation
+def load_large_dataset(file_path, batch_size=10000):
+    with open(file_path) as f:
+        reader = csv.DictReader(f)
+        batch = []
+        for i, row in enumerate(reader):
+            batch.append(process_row(row))
+            if i % batch_size == 0:
+                db.bulk_save_objects(batch)
+                batch = []
